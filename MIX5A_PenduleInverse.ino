@@ -7,9 +7,15 @@ float Dmax = 198;
 float Dmin = 2;
 float Dseuil = 12;
 
-float fusion(float senL, float senR) {
-  if(senL < Dseuil) {
-    
+float coefsLeftSensor[] = {1.f, 1.f, 1.f, 1.f};
+float coefsRightSensor[] = {1.f, 1.f, 1.f, 1.f};
+
+SensorFusion sensors(A0, A1);
+
+float fusion(float senL, float senR)
+{
+  if (senL < Dseuil)
+  {
   }
 }
 
@@ -21,8 +27,7 @@ void setup()
 
 void loop()
 {
-  int senL = analogRead(A0);
-  int senR = analogRead(A1);
+  float distance = sensors.update();
 
   // put your main code here, to run repeatedly:
   Serial.print("Gauche: ");
