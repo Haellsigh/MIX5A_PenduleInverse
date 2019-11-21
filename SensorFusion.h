@@ -16,12 +16,16 @@ public:
     ~SensorFusion() = default;
 
     /**
-     * \brief Sets the fitted coefficients for each sensor.
-     * \param coefsA An array containing the 4 coefficients for the sensor A.
-     * \param coefsB An array containing the 4 coefficients for the sensor B.
+     * \brief Sets the polynomial coefficients for the distance function.
+     * \param coefs An array containing the 6 coefficients for the distance 
+     * function.
      */
-    void setSensorCoefficients(float *coefsA, float *coefsB);
+    void setDistanceCoefficients(float *coefs);
 
+    /**
+     * \brief Returns a new fused value from the sensors.
+     * \returns The newest fused sensor value.
+     */
     float update();
 
 private:
@@ -31,8 +35,7 @@ private:
     uint8_t m_pinA, m_pinB;
     uint16_t m_maxADC;
 
-    float *m_coefsA = nullptr;
-    float *m_coefsB = nullptr;
+    float *m_coefs = nullptr;
 };
 
 #endif // PENDULE_SENSORFUSION_H
