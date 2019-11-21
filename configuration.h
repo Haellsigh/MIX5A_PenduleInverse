@@ -1,7 +1,6 @@
 #ifndef PENDULE_CONFIGURATION_H
 #define PENDULE_CONFIGURATION_H
 
-
 // Pin du capteur gauche
 constexpr uint8_t pinLeftSensor = A2;
 // Pin du capteur droite
