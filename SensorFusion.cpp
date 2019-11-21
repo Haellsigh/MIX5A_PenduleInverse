@@ -10,10 +10,9 @@ SensorFusion::SensorFusion(uint8_t pinA, uint8_t pinB, uint8_t nBits)
 {
 }
 
-void SensorFusion::setSensorCoefficients(float *coefsA, float *coefsB)
+void SensorFusion::setSensorCoefficients(float *coefs)
 {
-    m_coefsA = coefsA;
-    m_coefsB = coefsB;
+    m_coefs = coefs;
 }
 
 float SensorFusion::update()

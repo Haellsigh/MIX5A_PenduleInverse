@@ -12,6 +12,7 @@ void setup()
 void loop()
 {
   float distance = sensors.update();
+  Serial.println(distance);
 
   delay(50);
 }
