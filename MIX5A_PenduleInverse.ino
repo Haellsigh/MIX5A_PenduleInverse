@@ -1,125 +1,66 @@
-#include "configuration.h"
-#include "SensorFusion.h"
+#include "configuration.hh"
 
-#include <stdint.h>
+#include "src/sensors/IncrementalEncoder.hh"
+#include "src/sensors/SensorFusion.hh"
+#include "src/time.h"
 
-//SensorFusion sensors(pinLeftSensor, pinRightSensor, nBits);
+using namespace ip::config;
+using namespace ip::sensors;
 
-int32_t currentStep = 0;
+SensorFusion sensors(pinLeftSensor, pinRightSensor, nBits);
+IncrementalEncoder encoder;
 
-// Unknown initial state
-uint8_t EncoderAState, EncoderBState;
+void changeChA() {
+  encoder.handleChangeChA();
+}
 
-void stepAChange()
-{
-  EncoderAState = ((EncoderAState == LOW) ? HIGH : LOW);
+void changeChB() {
+  encoder.handleChangeChB();
+}
 
-  if (EncoderAState == HIGH) {
-    if (EncoderBState == LOW)
-      currentStep++;
-    else
-      currentStep--;
-  } else {
-    if (EncoderBState == HIGH)
-      currentStep++;
-    else
-      currentStep--;
+bool state7 = false, state8 = false;
+
+template <typename Function>
+class Task {
+ public:
+  Task(Function task, uint32_t f) : m_task(task) { m_timer.setFrequency(f); }
+
+  inline void run() {
+    if (m_timer.update())
+      m_task();
   }
-}
 
-void stepBChange()
-{
-  EncoderBState = ((EncoderBState == LOW) ? HIGH : LOW);
+ private:
+  ip::time::Timer m_timer;
+  Function m_task;
+};
 
-  if (EncoderBState == HIGH) {
-    if (EncoderAState == HIGH)
-      currentStep++;
-    else
-      currentStep--;
-  } else {
-    if (EncoderAState == LOW)
-      currentStep++;
-    else
-      currentStep--;
-  }
-}
+Task<void (*)()> freq7(fct1, 500);
+Task<void (*)()> freq8(fct2, 500);
 
-int32_t currentStep = 0;
+void setup() {
+  ip::time::init();
 
-// Unknown initial state
-uint8_t EncoderAState = LOW, EncoderBState = LOW;
-
-void stepALow()
-{
-  EncoderAState = LOW;
-
-  if (EncoderBState == HIGH)
-    currentStep++;
-  else
-    currentStep--;
-}
-
-void stepAHigh()
-{
-  EncoderAState = HIGH;
-
-  if (EncoderBState == LOW)
-    currentStep++;
-  else
-    currentStep--;
-}
-
-void stepBLow()
-{
-  EncoderBState = LOW;
-
-  if (EncoderAState == LOW)
-    currentStep++;
-  else
-    currentStep--;
-}
-
-void stepBhigh()
-{
-  EncoderBState = HIGH;
-
-  if (EncoderAState == HIGH)
-    currentStep++;
-  else
-    currentStep;
-}
-
-void setup()
-{
-  //sensors.setSensorCoefficients(coefsLeftSensor, coefsRightSensor);
   Serial.begin(115200);
 
-  pinMode(49, INPUT_PULLUP);
-  pinMode(51, INPUT_PULLUP);
+  sensors.setFusionCoefficients(distanceCoefs, nBits);
+  encoder.initialize(pinEncA, pinEncB, &changeChA, &changeChB);
 
-  delay(10);
-
-  noInterrupts();
-  
-  attachInterrupt(digitalPinToInterrupt(49), stepAChange, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(51), stepBChange, CHANGE);
-  
-  EncoderAState = digitalRead(49);
-  EncoderBState = digitalRead(51);
-  
-  interrupts();
+  pinMode(7, OUTPUT);
+  pinMode(8, OUTPUT);
 }
 
-void loop()
-{
-  float distance = sensors.update();
-  //Serial.println(distance);
+void loop() {
+  freq7.run();
+  freq8.run();
+}
 
-  int stepn;
-  noInterrupts();
-  stepn = currentStep % 2048;
-  interrupts();
+void fct1() {
+  digitalWrite(7, state7);
+  state7 = !state7;
+}
 
-  Serial.println(360. * stepn / 4096.);
-  delay(10);
+void fct2() {
+  digitalWrite(8, state8);
+  state8 = !state8;
 }
