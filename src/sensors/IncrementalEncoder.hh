@@ -8,7 +8,10 @@ namespace sensors {
 
 class IncrementalEncoder {
  public:
-  IncrementalEncoder()  = default;
+  IncrementalEncoder() = default;
+  IncrementalEncoder(uint32_t stepsPerRevolution) {
+    m_stepsToRad = stepsPerRevolution * 2 * M_PI;
+  }
   ~IncrementalEncoder() = default;
 
   template <typename Function>
@@ -31,14 +34,16 @@ class IncrementalEncoder {
     interrupts();
   }
 
-  int32_t getSteps() {
+  inline int32_t getSteps() {
     noInterrupts();
     int32_t pos = m_currentPosition;
     interrupts();
     return pos;
   }
 
-  void handleChangeChA() {
+  inline float getRadians() { return getSteps() * m_stepsToRad; }
+
+  inline void handleChangeChA() {
     // Register the change
     m_stateChA = !m_stateChA;
 
@@ -55,7 +60,7 @@ class IncrementalEncoder {
     }
   }
 
-  void handleChangeChB() {
+  inline void handleChangeChB() {
     // Register the change
     m_stateChB = !m_stateChB;
 
@@ -74,6 +79,7 @@ class IncrementalEncoder {
 
  private:
   int32_t m_currentPosition = 0;
+  float   m_stepsToRad      = 0;
   bool    m_stateChA, m_stateChB;
 };
 

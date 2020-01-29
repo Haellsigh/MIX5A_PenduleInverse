@@ -6,7 +6,13 @@
     ],
     "settings": {
         "files.associations": {
-            "*.tpp": "cpp"
+            "*.tpp": "cpp",
+            "list": "cpp",
+            "memory": "cpp",
+            "random": "cpp",
+            "sstream": "cpp",
+            "xlocnum": "cpp",
+            "*.tcc": "cpp"
         },
         "editor.formatOnSave": true
     }
