@@ -20,10 +20,9 @@ void changeChB() {
 
 bool state7 = false, state8 = false;
 
-template <typename Function>
 class Task {
  public:
-  Task(Function task, uint32_t f) : m_task(task) { m_timer.setFrequency(f); }
+  Task(void (*task)(), uint32_t f) : m_task(task), m_timer(f) {}
 
   inline void run() {
     if (m_timer.update())
@@ -32,11 +31,11 @@ class Task {
 
  private:
   ip::time::Timer m_timer;
-  Function m_task;
+  void (*m_task)();
 };
 
-Task<void (*)()> freq7(fct1, 500);
-Task<void (*)()> freq8(fct2, 500);
+Task freq7(fct1, 500);
+Task freq8(fct2, 500);
 
 void setup() {
   ip::time::init();
@@ -55,12 +54,6 @@ void loop() {
   freq8.run();
 }
 
-void fct1() {
-  digitalWrite(7, state7);
-  state7 = !state7;
-}
+void fct1() {}
 
-void fct2() {
-  digitalWrite(8, state8);
-  state8 = !state8;
-}
+void fct2() {}

@@ -6,39 +6,53 @@
 namespace ip {
 namespace time {
 
+volatile uint32_t* DWT_CYCCNT = (volatile uint32_t*)0xE0001004;
+volatile uint32_t* DWT_CONTROL = (volatile uint32_t*)0xE0001000;
+volatile uint32_t* SCB_DEMCR = (volatile uint32_t*)0xE000EDFC;
+
 /**
  * \brief Initialisation des fonctions de delai
  */
 static void init() {
-#ifdef DWT
-  if (!(CoreDebug->DEMCR & CoreDebug_DEMCR_TRCENA_Msk)) {
-    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
-    DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
-  }
-#endif
+  *SCB_DEMCR |= 0x01000000;
+  *DWT_CYCCNT = 0;    // reset the counter
+  *DWT_CONTROL |= 1;  // enable the counter
 }
 
-/**
- * \brief Delai de t microsecondes.
- */
-static void us(uint32_t t) {
-#ifdef DWT
-  uint32_t startTick = DWT->CYCCNT;
+inline uint32_t ticks() {
+  return *DWT_CYCCNT;
+}
+
+inline uint32_t us() {
+  static constexpr uint16_t cycles_per_us = F_CPU / 1000 / 1000;
+  return ticks() / cycles_per_us;
+}
+
+inline uint32_t ms() {
+  static constexpr uint16_t cycles_per_ms = F_CPU / 1000;
+  return ticks() / cycles_per_ms;
+}
+
+inline void us(uint32_t t) {
+  const uint32_t start = ticks();
   // 20 cycles of overhead
-  uint32_t delayTicks = t * (84000000 / 1000000) - 20;
+  constexpr uint32_t cycles_per_us = (F_CPU / 1000 / 1000) - 20;
 
-  while (DWT->CYCCNT - startTick < delayTicks)
+  const uint32_t delay = t * cycles_per_us;
+
+  while (ticks() - start < delay)
     ;
-#else
-  delayMicroseconds(t);
-#endif
 }
 
-/**
- * \brief Delai de t millisecondes.
- */
-static inline void ms(uint32_t t) {
-  us(t * 1000);
+inline void ms(uint32_t t) {
+  const uint32_t start = ticks();
+  // 20 cycles of overhead
+  constexpr uint32_t cycles_per_ms = (F_CPU / 1000) - 20;
+
+  uint32_t delay = t * cycles_per_ms;
+
+  while (ticks() - start < delay)
+    ;
 }
 
 class Timer {
@@ -50,15 +64,16 @@ class Timer {
   Timer(const uint32_t f) { setFrequency(f); }
 
   void setFrequency(const uint32_t f) {
-    m_delayTick = (84000000 / f);
-    m_startTick = DWT->CYCCNT;
+    // 20 cycles of overhead
+    m_delayTick = (F_CPU / f) - 20;
+    m_startTick = ticks();
   }
 
   /**
-   * \brief Renvoie true lorsque T=1/f est dépassé.
+   * \brief Renvoie true tout les temps T=1/f.
    */
   inline bool update() {
-    uint32_t tick = DWT->CYCCNT;
+    const uint32_t tick = ticks();
     if (tick - m_startTick > m_delayTick) {
       m_startTick = tick;
       return true;

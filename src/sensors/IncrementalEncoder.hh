@@ -22,8 +22,8 @@ class IncrementalEncoder {
     delay(10);
 
     noInterrupts();
-    // Attache les interruptions aux fonctions fournies. Celles-ci appellent
-    // handleChangeChx.
+    // Attache les interruptions aux fonctions fournies. Celles-ci doivent
+    // appeler handleChangeChx.
     attachInterrupt(digitalPinToInterrupt(pinLeft), changeChA, CHANGE);
     attachInterrupt(digitalPinToInterrupt(pinRight), changeChB, CHANGE);
     m_stateChA = digitalRead(pinLeft);
