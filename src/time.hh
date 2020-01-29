@@ -6,37 +6,33 @@
 namespace ip {
 namespace time {
 
-volatile uint32_t* DWT_CYCCNT = (volatile uint32_t*)0xE0001004;
-volatile uint32_t* DWT_CONTROL = (volatile uint32_t*)0xE0001000;
-volatile uint32_t* SCB_DEMCR = (volatile uint32_t*)0xE000EDFC;
+extern volatile uint32_t* DWT_CYCCNT;
+extern volatile uint32_t* DWT_CONTROL;
+extern volatile uint32_t* SCB_DEMCR;
 
 /**
  * \brief Initialisation des fonctions de delai
  */
-static void init() {
-  *SCB_DEMCR |= 0x01000000;
-  *DWT_CYCCNT = 0;    // reset the counter
-  *DWT_CONTROL |= 1;  // enable the counter
-}
+void init();
 
 inline uint32_t ticks() {
   return *DWT_CYCCNT;
 }
 
 inline uint32_t us() {
-  static constexpr uint16_t cycles_per_us = F_CPU / 1000 / 1000;
+  static constexpr uint32_t cycles_per_us = F_CPU / 1000 / 1000;
   return ticks() / cycles_per_us;
 }
 
 inline uint32_t ms() {
-  static constexpr uint16_t cycles_per_ms = F_CPU / 1000;
+  static constexpr uint32_t cycles_per_ms = F_CPU / 1000;
   return ticks() / cycles_per_ms;
 }
 
 inline void us(uint32_t t) {
   const uint32_t start = ticks();
-  // 20 cycles of overhead
-  constexpr uint32_t cycles_per_us = (F_CPU / 1000 / 1000) - 20;
+  // 20 cycles of overhead, todo
+  constexpr uint32_t cycles_per_us = (F_CPU / 1000 / 1000);
 
   const uint32_t delay = t * cycles_per_us;
 
@@ -46,8 +42,8 @@ inline void us(uint32_t t) {
 
 inline void ms(uint32_t t) {
   const uint32_t start = ticks();
-  // 20 cycles of overhead
-  constexpr uint32_t cycles_per_ms = (F_CPU / 1000) - 20;
+  // 20 cycles of overhead, todo
+  constexpr uint32_t cycles_per_ms = (F_CPU / 1000);
 
   uint32_t delay = t * cycles_per_ms;
 
@@ -74,16 +70,20 @@ class Timer {
    */
   inline bool update() {
     const uint32_t tick = ticks();
-    if (tick - m_startTick > m_delayTick) {
+    if (tick - m_startTick >= m_delayTick) {
+      m_dt        = tick - m_startTick;
       m_startTick = tick;
       return true;
     }
     return false;
   }
 
+  inline uint32_t getDelta() { return m_dt / F_CPU; }
+
  private:
-  uint32_t m_delayTick;
-  uint32_t m_startTick;
+  uint32_t m_delayTick = 0;
+  uint32_t m_startTick = 0;
+  uint32_t m_dt        = 0;
 };
 
 }  // namespace time

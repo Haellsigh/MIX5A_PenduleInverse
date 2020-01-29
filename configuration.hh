@@ -7,19 +7,24 @@ namespace ip {
 namespace config {
 
 // Pins de l'encodeur
-constexpr uint8_t pinEncA = 49;
-constexpr uint8_t pinEncB = 51;
+static constexpr uint8_t pinEncA = 49;
+static constexpr uint8_t pinEncB = 51;
 
 // Pin du capteur gauche
-constexpr uint8_t pinLeftSensor = A0;
+static constexpr uint8_t pinLeftSensor = A3;
 // Pin du capteur droite
-constexpr uint8_t pinRightSensor = A1;
+static constexpr uint8_t pinRightSensor = A2;
 // Nombre de bits de l'ADC
-constexpr uint8_t nBits = 10;
+static constexpr uint8_t nBits = 10;
+
+// Pin DAC0
+static constexpr uint8_t pinSetValueSpeed   = DAC0;
+static constexpr uint8_t pinVar11_Enable    = 48;
+static constexpr uint8_t pinVar12_Direction = 50;
 
 // Coefficients de l'interpolation polynomiale de la fonction distance.
-float distanceCoefs[] = {55.175f, -1150.f,  9029.8f, -31659.f,
-                         56620.f, -49194.f, 16460.f};
+static float distanceCoefsLeft[]  = {-373.15f, 3709.7f, -11435.f, 15705.f, -7933.9f};
+static float distanceCoefsRight[] = {340.62f, -2231.6f, 6091.2f, -7586.2f, 3501.4f};
 
 }  // namespace config
 }  // namespace ip

@@ -1,14 +1,20 @@
 #include "configuration.hh"
 
+#include "src/controllers/pid.hh"
 #include "src/sensors/IncrementalEncoder.hh"
 #include "src/sensors/SensorFusion.hh"
-#include "src/time.h"
+
+#include "src/time.hh"
 
 using namespace ip::config;
 using namespace ip::sensors;
+using namespace ip::controllers;
 
-SensorFusion sensors(pinLeftSensor, pinRightSensor, nBits);
+SensorFusion       sensors(pinLeftSensor, pinRightSensor, nBits);
 IncrementalEncoder encoder;
+Pid                pid(100);
+
+float position = 0;
 
 void changeChA() {
   encoder.handleChangeChA();
@@ -17,8 +23,6 @@ void changeChA() {
 void changeChB() {
   encoder.handleChangeChB();
 }
-
-bool state7 = false, state8 = false;
 
 class Task {
  public:
@@ -30,30 +34,69 @@ class Task {
   }
 
  private:
-  ip::time::Timer m_timer;
   void (*m_task)();
+  ip::time::Timer m_timer;
 };
 
-Task freq7(fct1, 500);
-Task freq8(fct2, 500);
+Task task_updatePosition(updatePosition, 100);
+Task task_serialPrint(serialPrint, 100);
 
 void setup() {
   ip::time::init();
 
+  pid.setP(1);
+  pid.setSetpoint(0);
+
   Serial.begin(115200);
 
-  sensors.setFusionCoefficients(distanceCoefs, nBits);
+  sensors.setFusionCoefficients(distanceCoefsLeft, distanceCoefsRight, nBits);
   encoder.initialize(pinEncA, pinEncB, &changeChA, &changeChB);
 
-  pinMode(7, OUTPUT);
-  pinMode(8, OUTPUT);
+  pinMode(pinVar11_Enable, OUTPUT);
+  pinMode(pinVar12_Direction, OUTPUT);
+  pinMode(pinSetValueSpeed, OUTPUT);
+
+  digitalWrite(pinVar11_Enable, HIGH);
 }
+
+float pidoutput = 0;
 
 void loop() {
-  freq7.run();
-  freq8.run();
+  task_updatePosition.run();
+  task_serialPrint.run();
 }
 
-void fct1() {}
+int x = 0;
 
-void fct2() {}
+void serialPrint() {
+  Serial.println(pidoutput);
+}
+
+void updatePosition() {
+  position = sensors.update();
+  pid.update(encoder.getSteps(), &pidoutput);
+
+  float   speed          = pidoutput;
+  float   speedValue     = constrain(fabs(speed), 0, 10);
+  uint8_t speedDirection = (speed > 0) ? HIGH : LOW;
+
+  analogWrite(pinSetValueSpeed, speedValue);
+  digitalWrite(pinVar12_Direction, speedDirection);
+
+  /*x++;
+  static constexpr double mult = M_PI * 2. / 1000.;
+
+  // Amplitude
+  static constexpr double amplitude = 2. / 100.;
+
+  // Speed in range [-1; 1]
+  float speed = sin(x * 2 * mult);
+  // Speed in range [0; 255]
+  uint8_t speedValue = amplitude * 255. * ((speed + 1.) / 2.);
+  // Direction of speed (true = forward)
+  uint8_t speedDirection = (speed > 0) ? HIGH : LOW;
+
+  analogWrite(pinSetValueSpeed, speedValue);
+  digitalWrite(pinVar12_Direction, speedDirection);
+  digitalWrite(pinVar11_Enable, speedDirection);*/
+}

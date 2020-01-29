@@ -14,9 +14,7 @@ class SensorFusion {
    * \param pinRight Pin où lire les données analogiques du capteur gauche.
    * \param nBits Nombre de bits de l'ADC.
    */
-  SensorFusion(const uint8_t pinLeft,
-               const uint8_t pinRight,
-               const uint8_t nBits);
+  SensorFusion(const uint8_t pinLeft, const uint8_t pinRight, const uint8_t nBits);
   ~SensorFusion() = default;
 
   /**
@@ -24,7 +22,7 @@ class SensorFusion {
    * \param coefs Tableau contenant les n coefficients.
    * \param n Nombre de coefficients.
    */
-  void setFusionCoefficients(float* coefs, const uint8_t n);
+  void setFusionCoefficients(float* coefsLeft, float* coefsRight, const uint8_t n);
 
   /**
    * \brief Renvoie une nouvelle valeur fusionnée des capteurs.
@@ -43,10 +41,10 @@ class SensorFusion {
   float fusion(const uint16_t rawLeft, const uint16_t rawRight) const;
 
  private:
-  uint8_t m_pinLeft, m_pinRight;
+  uint8_t  m_pinLeft, m_pinRight;
   uint16_t m_maxADC;
 
-  float* m_fCoefs = nullptr;
+  float * m_fCoefsLeft = nullptr, *m_fCoefsRight = nullptr;
   uint8_t m_nCoefs = 0;
 };
 

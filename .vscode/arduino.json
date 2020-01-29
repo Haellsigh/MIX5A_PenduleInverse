@@ -1,7 +1,6 @@
 {
-    "board": "arduino:avr:diecimila",
-    "port": "COM4",
+    "board": "arduino:sam:arduino_due_x_dbg",
+    "port": "COM3",
     "programmer": "AVRISP mkII",
-    "configuration": "cpu=atmega328",
     "sketch": "MIX5A_PenduleInverse.ino"
 }

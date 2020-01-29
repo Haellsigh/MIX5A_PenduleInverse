@@ -8,12 +8,12 @@ namespace sensors {
 
 class IncrementalEncoder {
  public:
-  IncrementalEncoder() = default;
+  IncrementalEncoder()  = default;
   ~IncrementalEncoder() = default;
 
   template <typename Function>
-  void initialize(uint8_t pinLeft,
-                  uint8_t pinRight,
+  void initialize(uint8_t  pinLeft,
+                  uint8_t  pinRight,
                   Function changeChA,
                   Function changeChB) {
     pinMode(pinLeft, INPUT_PULLUP);
@@ -73,8 +73,8 @@ class IncrementalEncoder {
   }
 
  private:
-  int32_t m_currentPosition;
-  bool m_stateChA, m_stateChB;
+  int32_t m_currentPosition = 0;
+  bool    m_stateChA, m_stateChB;
 };
 
 }  // namespace sensors
