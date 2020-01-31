@@ -1,5 +1,6 @@
 #include "configuration.hh"
 
+#include "src/SoftPWM/softpwm.hh"
 #include "src/controllers/pid.hh"
 #include "src/sensors/IncrementalEncoder.hh"
 #include "src/sensors/SensorFusion.hh"
@@ -12,7 +13,55 @@ using namespace ip::config;
 
 sensors::SensorFusion       infrared(pinLeftSensor, pinRightSensor, nBits);
 sensors::IncrementalEncoder encoder;
-controllers::Pid            pid(100);
+controllers::PID<float>     pid(100);
+SoftPWM                     enablePWM(pinVar11_Enable, 100);
+
+ip::TaskScheduler<3> scheduler;
+
+// Déclaration interruptions
+void changeChA();
+void changeChB();
+
+// Déclaration tâches
+void task_debugPrint();
+void task_control();
+void task_enableSoftPWM();
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Setup
+
+void setup() {
+  // Initilisation
+  ip::time::init();
+  Serial.begin(115200);
+
+  // Ajout des tâches
+  scheduler.add(task_control, 100);
+  scheduler.add(task_debugPrint, 100);
+  scheduler.add(task_enableSoftPWM, 10000);
+
+  // Configuration du régulateur PID
+  pid.setP(1);
+  pid.setSetpoint(0);
+
+  // Configuration des capteurs
+  infrared.setFusionCoefficients(distanceCoefsLeft, distanceCoefsRight, nBits);
+  encoder.initialize(pinEncA, pinEncB, &changeChA, &changeChB);
+
+  // Configuration entrées/sorties
+  pinMode(pinVar11_Enable, OUTPUT);
+  pinMode(pinVar12_Direction, OUTPUT);
+  pinMode(pinSetValueSpeed, OUTPUT);
+
+  enablePWM = 100;
+
+  digitalWrite(pinVar11_Enable, HIGH);
+}
+
+void loop() {}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Interruptions encoder
 
 void changeChA() {
   encoder.handleChangeChA();
@@ -21,6 +70,9 @@ void changeChA() {
 void changeChB() {
   encoder.handleChangeChB();
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Tâches
 
 void task_debugPrint() {
   // Serial.print();
@@ -35,6 +87,7 @@ void task_control() {
   float   speedValue     = constrain(fabs(speed), 0, 10);
   uint8_t speedDirection = (speed > 0) ? HIGH : LOW;
 
+  // speedValue € [0; 255]
   analogWrite(pinSetValueSpeed, speedValue);
   digitalWrite(pinVar12_Direction, speedDirection);
 
@@ -56,33 +109,6 @@ void task_control() {
   digitalWrite(pinVar11_Enable, speedDirection);*/
 }
 
-void task_updatePID() {}
-
-ip::TaskScheduler<2> scheduler;
-
-void setup() {
-  // Initilisation
-  ip::time::init();
-  Serial.begin(115200);
-
-  // Ajout des tâches
-  scheduler.add(task_control, 100);
-  scheduler.add(task_debugPrint, 100);
-
-  // Configuration du régulateur PID
-  pid.setP(1);
-  pid.setSetpoint(0);
-
-  infrared.setFusionCoefficients(distanceCoefsLeft, distanceCoefsRight, nBits);
-  encoder.initialize(pinEncA, pinEncB, &changeChA, &changeChB);
-
-  pinMode(pinVar11_Enable, OUTPUT);
-  pinMode(pinVar12_Direction, OUTPUT);
-  pinMode(pinSetValueSpeed, OUTPUT);
-
-  digitalWrite(pinVar11_Enable, HIGH);
-}
-
-void loop() {
-  scheduler.run();
+void task_enableSoftPWM() {
+  enablePWM.tick();
 }

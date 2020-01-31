@@ -6,14 +6,13 @@
 namespace ip {
 namespace controllers {
 
-class Pid {
- private:
-  /* data */
+template <typename T>
+class PID {
  public:
-  Pid(uint32_t frequency);
+  PID(uint32_t frequency);
   void setFrequency(uint32_t frequency);
-  void setWrap(float lowWrap, float highWrap);
-  void setSetpoint(float setpoint);
+  void setWrap(T lowWrap, T highWrap);
+  void setSetpoint(T setpoint);
   void setP(float kp);
   void setI(float ki);
   void setD(float kd);
@@ -22,12 +21,12 @@ class Pid {
    * \brief Met à jour la sortie du PID.
    * \warning Doit etre appelée à la bonne fréquence (celle donnée dans le constructeur).
    */
-  float update(float feedback);
+  T update(T feedback);
 
  private:
   uint32_t m_lastTime = 0;
 
-  float m_setpoint = 0;
+  T m_setpoint = 0;
 
   float m_lastInput = 0;
   float m_I         = 0;
@@ -36,11 +35,13 @@ class Pid {
   float m_disp_ki = 0, m_disp_kd = 0;
   float m_kp = 0, m_ki = 0, m_kd = 0;
 
-  bool  m_wrapped = false;
-  float m_lowWrap = 0, m_highWrap = 0;
+  bool m_wrapped = false;
+  T    m_lowWrap = 0, m_highWrap = 0;
 };
 
 }  // namespace controllers
 }  // namespace ip
+
+#include "pid_impl.hh"
 
 #endif  // PENDULEINVERSE_CONTROLLER_PID_H

@@ -12,7 +12,8 @@
             "random": "cpp",
             "sstream": "cpp",
             "xlocnum": "cpp",
-            "*.tcc": "cpp"
+            "*.tcc": "cpp",
+            "cmath": "cpp"
         },
         "editor.formatOnSave": true
     }
