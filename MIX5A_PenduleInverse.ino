@@ -3,7 +3,7 @@
 #include "src/SoftPWM/softpwm.hh"
 #include "src/controllers/pid.hh"
 #include "src/sensors/IncrementalEncoder.hh"
-#include "src/sensors/SensorFusion.hh"
+#include "src/sensors/InfraredFusion.hh"
 #include "src/taskscheduler.hh"
 
 #include "src/time.hh"
@@ -11,7 +11,7 @@
 using namespace ip;
 using namespace ip::configuration;
 
-sensors::SensorFusion       infrared(pin::infrared1, pin::infrared2, nBits);
+sensors::InfraredFusion     infrared(pin::infrared1, pin::infrared2, nBits);
 sensors::IncrementalEncoder encoder;
 controllers::PID<float>     pid(100);
 SoftPWM                     enablePWM(pin::var11_Enable, 100);
