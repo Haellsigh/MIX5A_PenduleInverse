@@ -61,8 +61,8 @@ class Timer {
 
   void setFrequency(const uint32_t f) {
     // 20 cycles of overhead
-    m_delayTick = (F_CPU / f) - 20;
-    m_startTick = ticks();
+    m_period = (F_CPU / f) - 20;
+    m_start  = ticks();
   }
 
   /**
@@ -70,20 +70,20 @@ class Timer {
    */
   inline bool update() {
     const uint32_t tick = ticks();
-    if (tick - m_startTick >= m_delayTick) {
-      m_dt        = tick - m_startTick;
-      m_startTick = tick;
+    if (tick - m_start >= m_period) {
+      m_delta = tick - m_start;
+      m_start = tick;
       return true;
     }
     return false;
   }
 
-  inline uint32_t getDelta() { return m_dt / F_CPU; }
+  inline uint32_t getDelta() { return m_delta; }
 
  private:
-  uint32_t m_delayTick = 0;
-  uint32_t m_startTick = 0;
-  uint32_t m_dt        = 0;
+  uint32_t m_period = 0;
+  uint32_t m_start  = 0;
+  uint32_t m_delta  = 0;
 };
 
 }  // namespace time

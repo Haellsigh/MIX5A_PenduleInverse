@@ -13,7 +13,8 @@
             "sstream": "cpp",
             "xlocnum": "cpp",
             "*.tcc": "cpp",
-            "cmath": "cpp"
+            "cmath": "cpp",
+            "algorithm": "cpp"
         },
         "editor.formatOnSave": true
     }

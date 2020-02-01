@@ -7,16 +7,17 @@ SoftPWM::SoftPWM(uint8_t pin, uint32_t maxDutyCycle, uint32_t dutyCycle)
   writePin(false);
 }
 
-void SoftPWM::tick() {
-  if (m_currentTick < m_dutyCycle)
-    writePin(true);
+void SoftPWM::setConstant(bool state) {
+  if (state)
+    m_dutyCycle = m_maxDutyCycle;
   else
-    writePin(false);
+    m_dutyCycle = 0;
+}
 
-  m_currentTick++;
-  if (m_currentTick >= m_maxDutyCycle) {
-    m_currentTick = 0;
-  }
-}  // namespace ip
+SoftPWM& SoftPWM::operator=(const uint32_t& dutyCycle) {
+  if (dutyCycle <= m_maxDutyCycle)
+    m_dutyCycle = dutyCycle;
+  return *this;
+}
 
 }  // namespace ip

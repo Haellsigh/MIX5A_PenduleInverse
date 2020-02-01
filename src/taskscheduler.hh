@@ -26,9 +26,9 @@ class TaskScheduler {
     if (m_nTask >= n)
       return;
 
-    m_tasks[m_nTask]       = t;
-    m_delayCycles[m_nTask] = F_CPU / frequency;
-    m_lastRan[m_nTask]     = time::ticks();
+    m_tasks[m_nTask]    = t;
+    m_lastTick[m_nTask] = 0;
+    m_period[m_nTask]   = F_CPU / frequency;
 
     m_nTask++;
   }
@@ -36,8 +36,8 @@ class TaskScheduler {
   inline void run() {
     const uint32_t tick = time::ticks();
     for (uint16_t i = 0; i < m_nTask; i++) {
-      if (tick - m_lastRan[i] >= m_delayCycles[i]) {
-        m_lastRan[i] = tick;
+      if (tick - m_lastTick[i] >= m_period[i]) {
+        m_lastTick[i] = tick;
         m_tasks[i]();
       }
     }
@@ -46,9 +46,9 @@ class TaskScheduler {
  private:
   uint16_t m_nTask = 0;
 
-  Task     m_tasks[n];
-  uint32_t m_lastRan[n];
-  uint32_t m_delayCycles[n];
+  Task     m_tasks[n];     // [Task] Function pointer to the task.
+  uint32_t m_lastTick[n];  // [tick] Last execution date of the task.
+  uint32_t m_period[n];    // [tick] Period of the task.
 };
 
 }  // namespace ip

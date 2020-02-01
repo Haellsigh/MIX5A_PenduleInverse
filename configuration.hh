@@ -4,29 +4,42 @@
 #include <cstdint>
 
 namespace ip {
-namespace config {
+namespace configuration {
+/**
+ * \brief Fréquence d'actualisation de chaque tâche.
+ */
+namespace frequence {
+static constexpr uint32_t control       = 100;
+static constexpr uint32_t debug         = 100;
+static constexpr uint32_t enableSoftPWM = 10000;
+}  // namespace frequence
 
-// Pins de l'encodeur
-static constexpr uint8_t pinEncA = 49;
-static constexpr uint8_t pinEncB = 51;
+/**
+ * \brief Affectation de pins.
+ */
+namespace pin {
+// Encodeur
+static constexpr uint8_t encoderA = 49;
+static constexpr uint8_t encoderB = 51;
+// Infrarouges
+static constexpr uint8_t infrared1 = A3;
+static constexpr uint8_t infrared2 = A2;
+// Variateur
+static constexpr uint8_t var11_Enable    = 48;
+static constexpr uint8_t var12_Direction = 50;
+static constexpr uint8_t var13_Speed     = DAC0;
+}  // namespace pin
 
-// Pin du capteur gauche
-static constexpr uint8_t pinLeftSensor = A3;
-// Pin du capteur droite
-static constexpr uint8_t pinRightSensor = A2;
 // Nombre de bits de l'ADC
 static constexpr uint8_t nBits = 10;
-
-// Pin DAC0
-static constexpr uint8_t pinSetValueSpeed   = DAC0;
-static constexpr uint8_t pinVar11_Enable    = 48;
-static constexpr uint8_t pinVar12_Direction = 50;
+// Limite pour activer le PWM sur le pin enable
+static constexpr uint32_t lowSpeedThreshold = 10;
 
 // Coefficients de l'interpolation polynomiale de la fonction distance.
 static float distanceCoefsLeft[]  = {-373.15f, 3709.7f, -11435.f, 15705.f, -7933.9f};
 static float distanceCoefsRight[] = {340.62f, -2231.6f, 6091.2f, -7586.2f, 3501.4f};
 
-}  // namespace config
+}  // namespace configuration
 }  // namespace ip
 
 #endif  // PENDULEINVERSE_CONFIGURATION_H
