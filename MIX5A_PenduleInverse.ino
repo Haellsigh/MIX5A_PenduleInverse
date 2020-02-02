@@ -5,7 +5,6 @@
 #include "src/sensors/IncrementalEncoder.hh"
 #include "src/sensors/InfraredFusion.hh"
 #include "src/taskscheduler.hh"
-
 #include "src/time.hh"
 
 using namespace ip;
@@ -59,7 +58,7 @@ void loop() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// Interruptions encoder
+// Interruptions encodeur
 
 inline void changeChA() {
   encoder.handleChangeChA();
@@ -70,7 +69,7 @@ inline void changeChB() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// Tâches
+// Tâches périodiques
 
 inline void task_debugPrint() {
   // Serial.print();
