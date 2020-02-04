@@ -30,7 +30,8 @@ void task_enableSoftPWM();
 // Setup
 
 void setup() {
-  // Initilisation des classes
+  // Initilisations
+  Eigen::internal::set_is_malloc_allowed(false);
   ip::time::init();
   Serial.begin(115200);
 

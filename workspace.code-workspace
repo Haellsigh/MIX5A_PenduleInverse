@@ -14,7 +14,8 @@
             "xlocnum": "cpp",
             "*.tcc": "cpp",
             "cmath": "cpp",
-            "algorithm": "cpp"
+            "algorithm": "cpp",
+            "core": "cpp"
         },
         "editor.formatOnSave": true
     }
