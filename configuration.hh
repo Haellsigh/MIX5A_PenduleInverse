@@ -25,7 +25,7 @@ static constexpr uint8_t encoderB = 51;
 static constexpr uint8_t infrared1 = A3;
 static constexpr uint8_t infrared2 = A2;
 // Variateur
-static constexpr uint8_t var11_Enable    = 48;
+static constexpr uint8_t var11_Enable    = 52;
 static constexpr uint8_t var12_Direction = 50;
 static constexpr uint8_t var13_Speed     = DAC0;
 }  // namespace pin
