@@ -1,5 +1,7 @@
 #include "configuration.hh"
 
+#include <Eigen.h>
+
 #include "src/SoftPWM/softpwm.hh"
 #include "src/controllers/pid.hh"
 #include "src/sensors/IncrementalEncoder.hh"
@@ -31,7 +33,6 @@ void task_enableSoftPWM();
 
 void setup() {
   // Initilisations
-  Eigen::internal::set_is_malloc_allowed(false);
   ip::time::init();
   Serial.begin(115200);
 
