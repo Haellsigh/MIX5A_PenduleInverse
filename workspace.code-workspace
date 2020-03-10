@@ -15,7 +15,8 @@
             "*.tcc": "cpp",
             "cmath": "cpp",
             "algorithm": "cpp",
-            "core": "cpp"
+            "core": "cpp",
+            "dense": "cpp"
         },
         "editor.formatOnSave": true
     }

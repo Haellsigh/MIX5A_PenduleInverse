@@ -1,5 +1,7 @@
 #include "pid.hh"
 
+#include <cmath>
+
 namespace ip {
 namespace controllers {
 
@@ -91,14 +93,17 @@ float PID::update(float measure) {
     const float width  = m_highWrap - m_lowWrap;
     const float offset = error - m_lowWrap;
 
-    error = offset - (floor(offset / width) * width) + m_lowWrap;
+    error = offset - (std::floor(offset / width) * width) + m_lowWrap;
   }
 
   // On dérive uniquement la mesure afin d'éviter les dérivées infinies de la consigne.
   float dMeasure = m_lastMeasure - measure;
 
+  // On calcule l'intégrale de l'erreur
+  // \todo: limiter l'intégrale de l'erreur
   m_I += error * m_ki;
 
+  // Calcul de la sortie du régulateur (multiplication/division par dt déja faite)
   return m_kp * error + m_I + m_kd * dMeasure;
 }
 

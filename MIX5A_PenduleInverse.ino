@@ -36,8 +36,7 @@ void setup() {
 
   // Configuration entrées/sorties
   pinMode(pin::var11_Enable, OUTPUT);
-  pinMode(pin::var12_Direction, OUTPUT);
-  pinMode(pin::var13_Speed, OUTPUT);
+  pinMode(pin::var13_Current, OUTPUT);
 
   // Ajout des tâches
   scheduler.add(task_control, frequency::control);
@@ -45,10 +44,10 @@ void setup() {
 
   // Configuration du régulateur PID
   pid.setWrap(-180, 180);
+  pid.setSetpoint(0);
   pid.setP(1);
   pid.setI(1);
   pid.setD(1);
-  pid.setSetpoint(0);
 
   // Configuration des capteurs
   infrared.setFusionCoefficients(distanceCoefsLeft, distanceCoefsRight, nBits);
@@ -56,6 +55,8 @@ void setup() {
 }
 
 void loop() {
+  // Exécute le gestionnaire de tâches aussi vite que possible.
+  // Celui-ci s'occupe de lancer les tâches au bon moments.
   scheduler.run();
 }
 
