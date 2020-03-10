@@ -1,13 +1,14 @@
 #include "configuration.hh"
-
-#include <Eigen.h>
-
-#include "src/SoftPWM/softpwm.hh"
-#include "src/controllers/pid.hh"
-#include "src/sensors/IncrementalEncoder.hh"
-#include "src/sensors/InfraredFusion.hh"
+// Utilities
 #include "src/taskscheduler.hh"
 #include "src/time.hh"
+// Sensors
+#include "src/sensors/IncrementalEncoder.hh"
+#include "src/sensors/InfraredFusion.hh"
+// Controllers
+#include "src/controllers/pid.hh"
+// State observers
+#include "observers/kalman.hh"
 
 using namespace ip;
 using namespace ip::configuration;
@@ -84,8 +85,8 @@ inline void task_debugPrint() {
 // Fréquence: 500 Hz
 inline void task_control() {
   float position = infrared.update();
-  float mesure   = encoder.getRadians();
-  float current  = pid.update(position);
+  // float angle    = encoder.getRadians();
+  float current = pid.update(position);
 
   float currentValue = abs(current);
   // Limit speed to [0; 10] out of [0; 255].
