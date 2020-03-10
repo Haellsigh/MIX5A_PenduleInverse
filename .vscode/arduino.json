@@ -1,6 +1,5 @@
 {
+    "sketch": "MIX5A_PenduleInverse.ino",
     "board": "arduino:sam:arduino_due_x_dbg",
-    "port": "COM3",
-    "programmer": "AVRISP mkII",
-    "sketch": "MIX5A_PenduleInverse.ino"
+    "programmer": "AVRISP mkII"
 }

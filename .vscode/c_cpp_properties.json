@@ -1,31 +1,25 @@
 {
     "configurations": [
         {
-            "name": "Arduino",
-            "includePath": [
-                "C:\\Program Files (x86)\\Arduino\\tools\\**",
-                "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\**",
-                "%localappdata%\\Arduino15\\packages\\arduino\\tools\\**",
-                "%localappdata%\\Arduino15\\packages\\arduino\\hardware\\sam\\1.6.12\\**",
-                "F:\\Programmes\\Arduino\\hardware\\arduino\\avr\\**",
-                "F:\\Programmes\\Arduino\\tools\\**",
-                "C:\\Users\\Nelieru\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\sam\\1.6.12\\**",
-                "C:\\Users\\Nelieru\\AppData\\Local\\Arduino15\\packages\\arduino\\tools\\**"
-            ],
-            "forcedInclude": [
-                "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\cores\\arduino\\Arduino.h",
-                "C:\\Users\\Nelieru\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\sam\\1.6.12\\cores\\arduino\\Arduino.h"
-            ],
-            "intelliSenseMode": "msvc-x64",
-            "cStandard": "c11",
-            "cppStandard": "c++17"
-        },
-        {
             "name": "Win32",
             "includePath": [
                 "C:\\Users\\Nelieru\\AppData\\Local\\Arduino15\\packages\\arduino\\tools\\**",
-                "C:\\Users\\Nelieru\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\sam\\1.6.12\\**"
+                "C:\\Users\\Nelieru\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\sam\\1.6.12\\**",
+                "${workspaceFolder}/**",
+                "${vcpkgRoot}/x64-windows/include",
+                "${vcpkgRoot}/x64-windows-static/include",
+                "${vcpkgRoot}/x86-windows/include"
             ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "10.0.18362.0",
+            "compilerPath": "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.24.28314/bin/Hostx64/x64/cl.exe",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "msvc-x64",
             "forcedInclude": [
                 "C:\\Users\\Nelieru\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\sam\\1.6.12\\cores\\arduino\\Arduino.h"
             ]
