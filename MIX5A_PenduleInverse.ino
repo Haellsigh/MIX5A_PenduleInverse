@@ -14,10 +14,9 @@ using namespace ip::configuration;
 
 sensors::InfraredFusion     infrared(pin::infrared1, pin::infrared2, nBits);
 sensors::IncrementalEncoder encoder;
-controllers::PID<float>     pid(100);
-SoftPWM                     enablePWM(pin::var11_Enable, 100);
+controllers::PID            pid(frequency::control);
 
-ip::TaskScheduler<3> scheduler;
+ip::TaskScheduler<2> scheduler;
 
 // Déclaration interruptions
 void changeChA();
@@ -26,7 +25,6 @@ void changeChB();
 // Déclaration tâches
 void task_debugPrint();
 void task_control();
-void task_enableSoftPWM();
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Setup
@@ -42,12 +40,14 @@ void setup() {
   pinMode(pin::var13_Speed, OUTPUT);
 
   // Ajout des tâches
-  scheduler.add(task_control, frequence::control);
-  scheduler.add(task_debugPrint, frequence::debug);
-  scheduler.add(task_enableSoftPWM, frequence::enableSoftPWM);
+  scheduler.add(task_control, frequency::control);
+  scheduler.add(task_debugPrint, frequency::debug);
 
   // Configuration du régulateur PID
+  pid.setWrap(-180, 180);
   pid.setP(1);
+  pid.setI(1);
+  pid.setD(1);
   pid.setSetpoint(0);
 
   // Configuration des capteurs
@@ -73,33 +73,23 @@ inline void changeChB() {
 //////////////////////////////////////////////////////////////////////////////////////////
 // Tâches périodiques
 
+// Fréquence: 100 Hz
 inline void task_debugPrint() {
   // Serial.print();
   // Serial.print(",");
   // Serial.println();
 }
 
+// Fréquence: 500 Hz
 inline void task_control() {
-  // float position = infrared.update();
-  float feedback = encoder.getRadians();
-  float speed    = pid.update(feedback);
+  float position = infrared.update();
+  float mesure   = encoder.getRadians();
+  float current  = pid.update(position);
 
-  float speedValue = abs(speed);
-  // Limit speed to [0; 10]
-  speedValue = speedValue > 10 ? 10 : speedValue;
+  float currentValue = abs(current);
+  // Limit speed to [0; 10] out of [0; 255].
+  currentValue = currentValue > 10 ? 10 : currentValue;
 
-  // Write outputs
-  analogWrite(pin::var13_Speed, speedValue);
-  digitalWriteFast(pin::var12_Direction, speed > 0);
-
-  // For low speeds, use pwm on the enable pin
-  if (speed <= lowSpeedThreshold)
-    enablePWM = 100 * speed / lowSpeedThreshold;
-  // For higher speeds, enable is always on
-  else
-    enablePWM = 100;
-}
-
-inline void task_enableSoftPWM() {
-  enablePWM.tick();
+  // Mise à jour de la consigne en courant du variateur
+  analogWrite(pin::var13_Current, currentValue);
 }

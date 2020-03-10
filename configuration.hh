@@ -8,14 +8,13 @@ namespace configuration {
 /**
  * \brief Fréquence d'actualisation de chaque tâche.
  */
-namespace frequence {
-static constexpr uint32_t control       = 100;
-static constexpr uint32_t debug         = 100;
-static constexpr uint32_t enableSoftPWM = 10000;
-}  // namespace frequence
+namespace frequency {
+static constexpr uint32_t control = 500;
+static constexpr uint32_t debug   = 100;
+}  // namespace frequency
 
 /**
- * \brief Affectation de pins.
+ * \brief Affectation des pins.
  */
 namespace pin {
 // Encodeur
@@ -25,15 +24,12 @@ static constexpr uint8_t encoderB = 51;
 static constexpr uint8_t infrared1 = A3;
 static constexpr uint8_t infrared2 = A2;
 // Variateur
-static constexpr uint8_t var11_Enable    = 52;
-static constexpr uint8_t var12_Direction = 50;
-static constexpr uint8_t var13_Speed     = DAC0;
+static constexpr uint8_t var11_Enable  = 52;
+static constexpr uint8_t var13_Current = DAC0;
 }  // namespace pin
 
 // Nombre de bits de l'ADC
 static constexpr uint8_t nBits = 10;
-// Limite pour activer le PWM sur le pin enable
-static constexpr uint32_t lowSpeedThreshold = 10;
 
 // Coefficients de l'interpolation polynomiale de la fonction distance.
 static float distanceCoefsLeft[]  = {-373.15f, 3709.7f, -11435.f, 15705.f, -7933.9f};
